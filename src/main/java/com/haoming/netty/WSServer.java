@@ -10,20 +10,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class WSServer {
 
-    private static class SingletonWSServer {
-        static final WSServer instance = new WSServer();
-    }
-
-    public static WSServer getInstance() {
-        return SingletonWSServer.instance;
-    }
-
     private EventLoopGroup mainGroup;
     private EventLoopGroup subGroup;
     private ServerBootstrap serverBootstrap;
     private ChannelFuture future;
 
-    public WSServer() {
+    private WSServer() {
         mainGroup = new NioEventLoopGroup();
         subGroup = new NioEventLoopGroup();
         serverBootstrap = new ServerBootstrap();
@@ -32,9 +24,29 @@ public class WSServer {
                 .childHandler(new WSServerInitializer());
     }
 
+    public static WSServer getInstance() {
+        return Singleton.INSTANCE.getInstance();
+    }
+
     public void start() {
         this.future = this.serverBootstrap.bind(8889);
         System.err.println("Netty websocket server boots successfully");
+    }
+
+    private enum Singleton {
+        INSTANCE;
+
+        private WSServer singleton;
+
+        // JVM will ensure that this method will only be called once.
+        // Instance will only be initialized when get called.
+        Singleton() {
+            singleton = new WSServer();
+        }
+
+        public WSServer getInstance() {
+            return singleton;
+        }
     }
 
 }
