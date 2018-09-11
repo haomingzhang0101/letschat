@@ -45,4 +45,11 @@ public interface UserService {
      * @date 2018-09-09 02:01
      */
     Users queryUserInfoByUsername(String username);
+
+    /**
+     * Send a friend request.
+     * @author zhanghm
+     * @date 2018-09-10 23:37
+     */
+    void sendFriendRequest(String myUserId, String friendUserName);
 }

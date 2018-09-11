@@ -1,8 +1,10 @@
 package com.haoming.service.impl;
 
 import com.haoming.enums.SearchFriendsStatusEnum;
+import com.haoming.mapper.FriendsRequestMapper;
 import com.haoming.mapper.MyFriendsMapper;
 import com.haoming.mapper.UsersMapper;
+import com.haoming.pojo.FriendsRequest;
 import com.haoming.pojo.MyFriends;
 import com.haoming.pojo.Users;
 import com.haoming.service.UserService;
@@ -19,6 +21,7 @@ import tk.mybatis.mapper.entity.Example;
 import tk.mybatis.mapper.entity.Example.Criteria;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -28,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private MyFriendsMapper myFriendsMapper;
+
+    @Autowired
+    private FriendsRequestMapper friendsRequestMapper;
 
     @Autowired
     private Sid sid;
@@ -135,6 +141,31 @@ public class UserServiceImpl implements UserService {
 
         uc.andEqualTo("username", username);
         return userMapper.selectOneByExample(usr);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void sendFriendRequest(String myUserId, String friendUserName) {
+        Users user = queryUserInfoByUsername(friendUserName);
+
+        Example fre = new Example(FriendsRequest.class);
+        Criteria frc = fre.createCriteria();
+        frc.andEqualTo("sendUserId", myUserId);
+        frc.andEqualTo("acceptUserId", user.getId());
+        FriendsRequest request = friendsRequestMapper.selectOneByExample(fre);
+        if (request == null) {
+            // Send a request if the user is not your friend nor you haven't send him a request.
+            String requestId = sid.nextShort();
+
+            FriendsRequest friendsRequest = new FriendsRequest();
+            friendsRequest.setId(requestId);
+            friendsRequest.setSendUserId(myUserId);
+            friendsRequest.setAcceptUserId(user.getId());
+            friendsRequest.setRequestDateTime(new Date());
+
+            friendsRequestMapper.insert(friendsRequest);
+        }
+
     }
 
 }

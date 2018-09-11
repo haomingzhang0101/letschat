@@ -119,4 +119,30 @@ public class UserController {
         }
     }
 
+    /**
+     * Send a friend request.
+     * @author zhanghm
+     * @date 2018-09-09 01:10
+     */
+    @PostMapping("/addFriendRequest")
+    public IMoocJSONResult addFriendRequest(String myUserId, String friendUserName) throws Exception {
+
+        // Make sure that either myUserId or friendUserName can't be null.
+        if (StringUtils.isBlank(myUserId) || StringUtils.isBlank(friendUserName)) {
+            return IMoocJSONResult.errorMsg("");
+        }
+
+        // 1. Return "no such user" if the given friendUserName doesn't exist.
+        // 2. Return "Can not add yourself" if the given friendUserName coincides with current user's username.
+        // 3. Return "You guys are already friends, start chatting now" if the current user is trying to re-add a friend.
+        Integer status = userService.preconditionSearchFriends(myUserId, friendUserName);
+        if (status != SearchFriendsStatusEnum.SUCCESS.getStatus()) {
+            return IMoocJSONResult.errorMsg(SearchFriendsStatusEnum.getMsgByKey(status));
+        } else {
+            userService.sendFriendRequest(myUserId, friendUserName);
+        }
+
+        return IMoocJSONResult.ok();
+    }
+
 }
