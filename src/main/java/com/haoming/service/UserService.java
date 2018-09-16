@@ -62,4 +62,18 @@ public interface UserService {
      * @date 2018-09-15 21:38
      */
     List<FriendRequestVO> queryFriendRequestList(String acceptUserId);
+
+    /**
+     * Delete a friend request.
+     * @author zhanghm
+     * @date 2018-09-16 00:06
+     */
+    void deleteFriendRequest(String sendUserId, String acceptUserId);
+
+    /**
+     * Accept a friend request.
+     * @author zhanghm
+     * @date 2018-09-16 00:06
+     */
+    void acceptFriendRequest(String sendUserId, String acceptUserId);
 }

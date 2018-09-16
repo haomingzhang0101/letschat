@@ -180,4 +180,32 @@ public class UserServiceImpl implements UserService {
         return usersMapperCustom.queryFriendRequestList(acceptUserId);
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void deleteFriendRequest(String sendUserId, String acceptUserId) {
+        Example fre = new Example(FriendsRequest.class);
+        Criteria frc = fre.createCriteria();
+        frc.andEqualTo("sendUserId", sendUserId);
+        frc.andEqualTo("acceptUserId", acceptUserId);
+        friendsRequestMapper.deleteByExample(fre);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void acceptFriendRequest(String sendUserId, String acceptUserId) {
+        this.saveFriends(sendUserId, acceptUserId);
+        this.saveFriends(acceptUserId, sendUserId);
+        this.deleteFriendRequest(sendUserId, acceptUserId);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveFriends(String sendUserId, String acceptUserId) {
+        String id = sid.nextShort();
+        MyFriends myFriends = new MyFriends();
+        myFriends.setId(id);
+        myFriends.setMyUserId(sendUserId);
+        myFriends.setMyFriendUserId(acceptUserId);
+        myFriendsMapper.insert(myFriends);
+    }
+
 }

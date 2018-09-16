@@ -1,6 +1,7 @@
 package com.haoming.controller;
 
 import com.haoming.bo.UsersBO;
+import com.haoming.enums.OperatorFriendRequestTypeEnum;
 import com.haoming.enums.SearchFriendsStatusEnum;
 import com.haoming.pojo.Users;
 import com.haoming.service.UserService;
@@ -162,5 +163,30 @@ public class UserController {
         return IMoocJSONResult.ok(list);
     }
 
+    /**
+     * Accept or ignore a friend request.
+     * @author zhanghm
+     * @date 2018-09-15 23:52
+     */
+    @RequestMapping("/operFriendRequest")
+    public IMoocJSONResult operFriendRequest(String acceptUserId, String sendUserId, Integer operType) {
+        if (StringUtils.isBlank(acceptUserId) || StringUtils.isBlank(sendUserId) || operType == null) {
+            return IMoocJSONResult.errorMsg("Wrong parameter");
+        }
+
+        if (StringUtils.isBlank(OperatorFriendRequestTypeEnum.getMsgByType(operType))) {
+            return IMoocJSONResult.errorMsg("Wrong operator");
+        }
+
+        if (operType.equals(OperatorFriendRequestTypeEnum.IGNORE.type)) {
+            // Delete the request.
+            userService.deleteFriendRequest(sendUserId, acceptUserId);
+        } else if (operType.equals(OperatorFriendRequestTypeEnum.PASS.type)) {
+            // Add friend record and delete the request.
+            userService.acceptFriendRequest(sendUserId, acceptUserId);
+        }
+
+        return IMoocJSONResult.ok();
+    }
 
 }
