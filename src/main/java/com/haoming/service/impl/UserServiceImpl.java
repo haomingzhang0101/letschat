@@ -4,6 +4,7 @@ import com.haoming.enums.SearchFriendsStatusEnum;
 import com.haoming.mapper.FriendsRequestMapper;
 import com.haoming.mapper.MyFriendsMapper;
 import com.haoming.mapper.UsersMapper;
+import com.haoming.mapper.UsersMapperCustom;
 import com.haoming.pojo.FriendsRequest;
 import com.haoming.pojo.MyFriends;
 import com.haoming.pojo.Users;
@@ -11,6 +12,7 @@ import com.haoming.service.UserService;
 import com.haoming.utils.FastDFSClient;
 import com.haoming.utils.FileUtils;
 import com.haoming.utils.QRCodeUtils;
+import com.haoming.vo.FriendRequestVO;
 import org.n3r.idworker.Sid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,16 @@ import tk.mybatis.mapper.entity.Example.Criteria;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
     private UsersMapper userMapper;
+
+    @Autowired
+    private UsersMapperCustom usersMapperCustom;
 
     @Autowired
     private MyFriendsMapper myFriendsMapper;
@@ -166,6 +172,12 @@ public class UserServiceImpl implements UserService {
             friendsRequestMapper.insert(friendsRequest);
         }
 
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<FriendRequestVO> queryFriendRequestList(String acceptUserId) {
+        return usersMapperCustom.queryFriendRequestList(acceptUserId);
     }
 
 }

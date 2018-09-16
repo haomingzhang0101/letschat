@@ -1,6 +1,9 @@
 package com.haoming.service;
 
 import com.haoming.pojo.Users;
+import com.haoming.vo.FriendRequestVO;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -52,4 +55,11 @@ public interface UserService {
      * @date 2018-09-10 23:37
      */
     void sendFriendRequest(String myUserId, String friendUserName);
+
+    /**
+     * Query the request list for an user.
+     * @author zhanghm
+     * @date 2018-09-15 21:38
+     */
+    List<FriendRequestVO> queryFriendRequestList(String acceptUserId);
 }

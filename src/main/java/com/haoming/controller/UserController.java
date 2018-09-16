@@ -8,12 +8,15 @@ import com.haoming.utils.FastDFSClient;
 import com.haoming.utils.FileUtils;
 import com.haoming.utils.IMoocJSONResult;
 import com.haoming.utils.MD5Utils;
+import com.haoming.vo.FriendRequestVO;
 import com.haoming.vo.UsersVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("u")
@@ -144,5 +147,20 @@ public class UserController {
 
         return IMoocJSONResult.ok();
     }
+
+    /**
+     * Query the request list for an user.
+     * @author zhanghm
+     * @date 2018-09-15 21:38
+     */
+    @RequestMapping("/queryFriendRequests")
+    public IMoocJSONResult queryFriendRequests(String acceptUserId) {
+        if (StringUtils.isBlank(acceptUserId)) {
+            return IMoocJSONResult.errorMsg("Empty user id");
+        }
+        List<FriendRequestVO> list = userService.queryFriendRequestList(acceptUserId);
+        return IMoocJSONResult.ok(list);
+    }
+
 
 }
